@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #E8E8EC;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 64px;
+  min-height: 100vh;
+}
+
+.phone {
+  width: 375px;
+  background: #FAFAF8;
+  border-radius: 48px;
+  overflow: hidden;
+  box-shadow: 0 32px 96px rgba(0,0,0,0.22);
+}
+
+/* Status */
+.statusbar {
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 26px 12px;
+  font-size: 12px; font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #F0EEF0;
+}
+
+/* Nav */
+.navbar {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px 14px;
+  position: relative;
+  border-bottom: 1px solid #F0EEF0;
+}
+.navbar-back { position: absolute; left: 20px; font-size: 22px; color: #555; }
+.navbar-title { font-size: 16px; font-weight: 600; color: #222; }
+.navbar-export { position: absolute; right: 20px; font-size: 18px; color: #555; }
+
+/* Score hero */
+.score-hero {
+  background: #fff;
+  padding: 20px 22px 20px;
+  border-bottom: 1px solid #F0EEF0;
+}
+.sh-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.sh-left {}
+.sh-label { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 4px; }
+.sh-score {
+  font-family: 'DM Mono', monospace;
+  font-size: 72px;
+  font-weight: 400;
+  line-height: 1;
+  color: #E05030;
+}
+.sh-out-of { font-size: 20px; color: #ccc; }
+.sh-weight { font-size: 13px; color: #999; margin-top: 5px; }
+
+.sh-right {}
+.body-age-box {
+  background: #FEF3F0;
+  border: 1.5px solid #F0C0B0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  text-align: center;
+  min-width: 90px;
+}
+.ba-label  { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 3px; }
+.ba-num    { font-family: 'DM Mono', monospace; font-size: 40px; font-weight: 400; color: #E05030; line-height: 1; }
+.ba-unit   { font-size: 11px; color: #aaa; }
+.ba-caption { font-size: 10px; color: #E05030; font-weight: 600; margin-top: 3px; }
+
+.sh-verdict {
+  margin-top: 14px;
+  background: #FEF3F0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #E05030;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Weight position bar (like reference) */
+.weight-section {
+  background: #fff;
+  padding: 18px 22px;
+  border-bottom: 1px solid #F0EEF0;
+}
+.ws-title { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 14px; }
+.ws-bar-wrap { position: relative; margin-bottom: 8px; padding-top: 22px; }
+.ws-pin {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ws-pin-icon {
+  width: 22px; height: 22px;
+  background: #E05030;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #fff; font-weight: 700;
+}
+.ws-pin-line { width: 2px; height: 10px; background: #E05030; }
+.ws-track {
+  height: 10px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #5080E0 0%, #40B870 28%, #E8A030 60%, #E05030 100%);
+}
+.ws-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #bbb;
+  margin-top: 6px;
+}
+.ws-zone-labels {
+  display: flex;
+  font-size: 10px;
+  color: #999;
+  margin-top: 4px;
+}
+.ws-zone { flex: 1; text-align: center; }
+.ws-zone:first-child { text-align: left; }
+.ws-zone:last-child  { text-align: right; }
+.ws-ideal { font-size: 12px; color: #444; font-weight: 600; margin-top: 8px; }
+.ws-ideal span { color: #E05030; }
+
+/* Param list — reference style */
+.params-section { background: #fff; margin-top: 10px; }
+.params-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #3AADA8;
+  padding: 16px 22px 10px;
+}
+
+.prow {
+  display: flex; align-items: center;
+  padding: 13px 20px;
+  border-bottom: 1px solid #F5F3F0;
+  gap: 14px;
+  cursor: pointer;
+}
+.prow-highlight { background: #FEF8F6; }
+.prow:last-child { border-bottom: none; }
+
+.prow-icon {
+  width: 36px; height: 36px; border-radius: 99px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.pi-red  { background: #FDECEA; }
+.pi-amb  { background: #FEF7E6; }
+.pi-ok   { background: #EBF7F3; }
+.pi-blue { background: #EEF2FD; }
+
+.prow-body { flex: 1; }
+.prow-name { font-size: 14px; font-weight: 500; color: #222; }
+.prow-name-alert { color: #E05030; font-weight: 700; }
+.prow-val  { font-size: 12px; color: #999; margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+.prow-right { display: flex; align-items: center; gap: 8px; }
+.prow-status {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 3px 9px; border-radius: 99px;
+}
+.ps-high { background: #FDECEA; color: #E05030; }
+.ps-warn { background: #FEF7E6; color: #C08000; }
+.ps-low  { background: #F0EEFF; color: #7050C0; }
+.ps-ok   { background: #EBF7F3; color: #2A9060; }
+.prow-chevron { font-size: 16px; color: #ccc; }
+
+/* Muscle callout */
+.muscle-alert {
+  margin: 12px 14px 4px;
+  background: #FFF5F0;
+  border: 1.5px solid #F0C0A8;
+  border-radius: 16px;
+  padding: 16px;
+}
+.ma-row { display: flex; gap: 12px; margin-bottom: 10px; }
+.ma-icon { font-size: 26px; flex-shrink: 0; }
+.ma-title { font-size: 14px; font-weight: 700; color: #222; line-height: 1.3; }
+.ma-sub   { font-size: 11px; color: #999; margin-top: 2px; }
+.ma-body  { font-size: 12px; color: #666; line-height: 1.65; }
+.ma-body strong { color: #E05030; font-weight: 600; }
+
+/* Goal card */
+.goal-card {
+  margin: 14px 14px 14px;
+  background: #222028;
+  border-radius: 20px;
+  padding: 20px 20px 22px;
+  color: #EEE;
+}
+.gc-eyebrow {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: #3AADA8; margin-bottom: 10px;
+}
+.gc-title {
+  font-size: 18px; font-weight: 300;
+  color: #EEE; line-height: 1.4;
+  margin-bottom: 18px;
+}
+.gc-title strong { font-weight: 700; color: #fff; }
+
+.gc-table { display: flex; flex-direction: column; gap: 10px; }
+.gc-row { display: flex; justify-content: space-between; align-items: center; }
+.gc-row-label { font-size: 12px; color: #888; }
+.gc-row-vals { display: flex; align-items: center; gap: 10px; }
+.gc-now {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; color: #666;
+  text-decoration: line-through;
+}
+.gc-arrow { font-size: 12px; color: #555; }
+.gc-target {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; font-weight: 600; color: #3AADA8;
+}
+
+.gc-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 14px 0 12px; }
+.gc-footer { font-size: 11px; color: #666; line-height: 1.5; }
+.gc-footer strong { color: #AAA; font-weight: 600; }
+
+/* CTA */
+.cta-wrap { padding: 6px 14px 34px; }
+.cta-commit {
+  display: block; width: 100%;
+  padding: 18px;
+  background: #3AADA8;
+  color: #fff;
+  border: none; border-radius: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px; font-weight: 800;
+  cursor: pointer; text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+.cta-ghost {
+  display: block; width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: #999;
+  border: 1.5px solid #DDD;
+  border-radius: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="statusbar">
+    <span>9:41</span>
+    <span>▮▮▮ 5G</span>
+  </div>
+  <div class="navbar">
+    <div class="navbar-back">‹</div>
+    <div class="navbar-title">Body Composition</div>
+    <div class="navbar-export">⎋</div>
+  </div>
+
+  <!-- Score hero -->
+  <div class="score-hero">
+    <div class="sh-row">
+      <div class="sh-left">
+        <div class="sh-label">Body score</div>
+        <div><span class="sh-score">52</span><span class="sh-out-of"> /100</span></div>
+        <div class="sh-weight">82 kg · 168 cm</div>
+      </div>
+      <div class="sh-right">
+        <div class="body-age-box">
+          <div class="ba-label">Body age</div>
+          <div class="ba-num">54</div>
+          <div class="ba-unit">years</div>
+          <div class="ba-caption">You are 47 ↑+7</div>
+        </div>
+      </div>
+    </div>
+    <div class="sh-verdict">
+      ⚠️ Your body is ageing faster than it should be
+    </div>
+  </div>
+
+  <!-- Weight position on scale -->
+  <div class="weight-section">
+    <div class="ws-title">Weight position</div>
+    <div class="ws-bar-wrap">
+      <!-- pin at ~70% of bar (82kg in overweight zone) -->
+      <div class="ws-pin" style="left: 68%;">
+        <div class="ws-pin-icon">▼</div>
+        <div class="ws-pin-line"></div>
+      </div>
+      <div class="ws-track"></div>
+    </div>
+    <div class="ws-range-labels">
+      <span>53 kg</span>
+      <span>72 kg</span>
+      <span>87 kg</span>
+      <span>100 kg</span>
+    </div>
+    <div class="ws-zone-labels">
+      <div class="ws-zone">Under</div>
+      <div class="ws-zone">Normal</div>
+      <div class="ws-zone" style="color:#E05030;font-weight:700;">Overweight ←</div>
+      <div class="ws-zone">Obese</div>
+    </div>
+    <div class="ws-ideal">Ideal weight: <span>70 kg</span> &nbsp;·&nbsp; 12 kg to go</div>
+  </div>
+
+  <!-- Body params list -->
+  <div class="params-section">
+    <div class="params-eyebrow">Body parameters</div>
+
+    <div class="prow prow-highlight">
+      <div class="prow-icon pi-red">💪</div>
+      <div class="prow-body">
+        <div class="prow-name prow-name-alert">Muscle mass ↓</div>
+        <div class="prow-val">29 kg &nbsp;·&nbsp; need 36+ kg</div>
+      </div>
+      <div class="prow-right">
+        <span class="prow-status ps-high">Too low</span>
+        <span class="prow-chevron">›</span>
+      </div>
+    </div>
+
+    <div class="prow">
+      <div class="prow-icon pi-red">📉</div>
+      <div class="prow-body">
+        <div class="prow-name">Body fat</div>
+        <div class="prow-val">38% &nbsp;·&nbsp; target &lt;30%</div>
+      </div>
+      <div class="prow-right">
+        <span class="prow-status ps-high">High</span>
+        <span class="prow-chevron">›</span>
+      </div>
+    </div>
+
+    <div class="prow">
+      <div class="prow-icon pi-red">🫀</div>
+      <div class="prow-body">
+        <div class="prow-name">Visceral fat</div>
+        <div class="prow-val">Level 11 &nbsp;·&nbsp; target &lt;9</div>
+      </div>
+      <div class="prow-right">
+        <span class="prow-status ps-high">High</span>
+        <span class="prow-chevron">›</span>
+      </div>
+    </div>
+
+    <div class="prow">
+      <div class="prow-icon pi-amb">🦴</div>
+      <div class="prow-body">
+        <div class="prow-name">Bone mass</div>
+        <div class="prow-val">2.8 kg</div>
+      </div>
+      <div class="prow-right">
+        <span class="prow-status ps-warn">Watch</span>
+        <span class="prow-chevron">›</span>
+      </div>
+    </div>
+
+    <div class="prow">
+      <div class="prow-icon pi-amb">💧</div>
+      <div class="prow-body">
+        <div class="prow-name">Body water</div>
+        <div class="prow-val">44.2%</div>
+      </div>
+      <div class="prow-right">
+        <span class="prow-status ps-warn">Low</span>
+        <span class="prow-chevron">›</span>
+      </div>
+    </div>
+
+    <div class="prow">
+      <div class="prow-icon pi-ok">⚡</div>
+      <div class="prow-body">
+        <div class="prow-name">BMI</div>
+        <div class="prow-val">29.1</div>
+      </div>
+      <div class="prow-right">
+        <span class="prow-status ps-warn">Overweight</span>
+        <span class="prow-chevron">›</span>
+      </div>
+    </div>
+
+    <div class="prow">
+      <div class="prow-icon pi-ok">🔥</div>
+      <div class="prow-body">
+        <div class="prow-name">Basal metabolism</div>
+        <div class="prow-val">1,420 kcal/day</div>
+      </div>
+      <div class="prow-right">
+        <span class="prow-status ps-ok">Normal</span>
+        <span class="prow-chevron">›</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Muscle callout -->
+  <div class="muscle-alert">
+    <div class="ma-row">
+      <span class="ma-icon">⚠️</span>
+      <div>
+        <div class="ma-title">Muscle loss is the root problem</div>
+        <div class="ma-sub">This affects how you look, your energy, and your weight</div>
+      </div>
+    </div>
+    <div class="ma-body">
+      At 29 kg of muscle — <strong>7 kg below where you should be</strong> — your metabolism is slower than it needs to be. This means your body burns fewer calories at rest and stores more as fat, even when you're not overeating. During perimenopause, this accelerates without active resistance to it.
+    </div>
+  </div>
+
+  <!-- Goal commitment card -->
+  <div class="goal-card">
+    <div class="gc-eyebrow">Your 90-day goal</div>
+    <div class="gc-title">
+      <strong>More muscle. Less fat.</strong><br>
+      Not just a lower number on the scale.
+    </div>
+    <div class="gc-table">
+      <div class="gc-row">
+        <span class="gc-row-label">Weight</span>
+        <div class="gc-row-vals">
+          <span class="gc-now">82 kg</span>
+          <span class="gc-arrow">→</span>
+          <span class="gc-target">74 kg</span>
+        </div>
+      </div>
+      <div class="gc-row">
+        <span class="gc-row-label">Muscle mass</span>
+        <div class="gc-row-vals">
+          <span class="gc-now">29 kg</span>
+          <span class="gc-arrow">→</span>
+          <span class="gc-target">34 kg</span>
+        </div>
+      </div>
+      <div class="gc-row">
+        <span class="gc-row-label">Body fat</span>
+        <div class="gc-row-vals">
+          <span class="gc-now">38%</span>
+          <span class="gc-arrow">→</span>
+          <span class="gc-target">30%</span>
+        </div>
+      </div>
+      <div class="gc-row">
+        <span class="gc-row-label">Body age</span>
+        <div class="gc-row-vals">
+          <span class="gc-now">54</span>
+          <span class="gc-arrow">→</span>
+          <span class="gc-target">47</span>
+        </div>
+      </div>
+    </div>
+    <div class="gc-divider"></div>
+    <div class="gc-footer">
+      Achievable with <strong>protein-first eating + 3× resistance sessions</strong> per week. Flo will guide you step by step.
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-wrap">
+    <button class="cta-commit">I'm committed — show me how</button>
+    <button class="cta-ghost">How was this calculated?</button>
+  </div>
+
+</div>
+</body>
+</html>

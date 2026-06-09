@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #E8E8EC;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 64px;
+  min-height: 100vh;
+}
+
+.phone {
+  width: 375px;
+  background: #F5F4F0;
+  border-radius: 48px;
+  overflow: hidden;
+  box-shadow: 0 32px 96px rgba(0,0,0,0.22);
+}
+
+/* ── Status bar ── */
+.statusbar {
+  background: #3AADA8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 26px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ── Nav bar (teal like reference) ── */
+.navbar {
+  background: #3AADA8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px 16px;
+  position: relative;
+}
+.navbar-title { font-size: 17px; font-weight: 600; color: #fff; }
+.navbar-close {
+  position: absolute; right: 22px;
+  font-size: 20px; color: rgba(255,255,255,0.85);
+  font-weight: 300;
+}
+
+/* ── Section eyebrow ── */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #3AADA8;
+  padding: 18px 20px 10px;
+}
+
+/* ── Calorie summary card ── */
+.cal-card {
+  margin: 0 14px 14px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.cal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+.cal-consumed {}
+.cal-c-label { font-size: 11px; color: #999; margin-bottom: 3px; }
+.cal-c-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 42px;
+  font-weight: 500;
+  color: #E05030;
+  line-height: 1;
+}
+.cal-c-unit { font-size: 13px; color: #999; }
+.cal-right { text-align: right; }
+.cal-goal-label { font-size: 11px; color: #999; margin-bottom: 3px; }
+.cal-goal-val { font-size: 14px; font-weight: 600; color: #555; }
+.cal-over {
+  display: inline-block;
+  background: #FDECEA;
+  color: #E05030;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 9px; border-radius: 99px;
+  margin-top: 5px;
+}
+
+/* split bar */
+.split-bar-wrap { margin-bottom: 8px; }
+.split-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px; color: #bbb;
+  margin-bottom: 5px;
+}
+.split-bar-track {
+  height: 10px;
+  background: #F0EFEB;
+  border-radius: 99px;
+  overflow: hidden;
+  display: flex;
+}
+.split-goal { background: #3AADA8; border-radius: 99px 0 0 99px; flex: none; width: 66%; }
+.split-over { background: #E05030; border-radius: 0; flex: none; width: 34%; }
+
+.cal-warning {
+  margin-top: 12px;
+  background: #FEF3F0;
+  border-left: 3px solid #E05030;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.6;
+}
+.cal-warning strong { color: #E05030; font-weight: 600; }
+
+/* ── Macro bar list (reference-style) ── */
+.nutrient-card {
+  margin: 0 14px 14px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.nutrient-guide-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px 16px 8px;
+  border-bottom: 1px solid #F2F1EE;
+}
+.guide-label { font-size: 11px; color: #bbb; font-weight: 600; letter-spacing: 0.06em; }
+
+.nrow {
+  display: flex;
+  align-items: center;
+  padding: 11px 16px;
+  border-bottom: 1px solid #F2F1EE;
+  gap: 10px;
+}
+.nrow:last-child { border-bottom: none; }
+.nrow-name {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  width: 70px;
+  flex-shrink: 0;
+}
+.nrow-bar-wrap {
+  flex: 1;
+  height: 18px;
+  background: #F2F1EE;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.nrow-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  min-width: 36px;
+}
+.nrow-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  width: 46px;
+  text-align: right;
+  flex-shrink: 0;
+  padding: 3px 7px;
+  border-radius: 6px;
+}
+.pct-over { background: #FDECEA; color: #E05030; }
+.pct-warn { background: #FEF7E6; color: #C08000; }
+.pct-low  { background: #F0EEFF; color: #7050C0; }
+.pct-ok   { background: #EBF7F3; color: #2A9060; }
+
+/* ── Divider ── */
+.divider { height: 1px; background: #E8E6E2; margin: 4px 14px 14px; }
+
+/* ── Recommendations ── */
+.recs { padding: 0 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.rec {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.rec-left {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.rl-red  { background: #FDECEA; }
+.rl-grn  { background: #EBF7F3; }
+.rl-amb  { background: #FEF7E6; }
+.rec-right {}
+.rec-title { font-size: 13px; font-weight: 700; color: #222; margin-bottom: 2px; }
+.rec-tag {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 99px; margin-bottom: 6px;
+}
+.rt-red  { background: #FDECEA; color: #E05030; }
+.rt-grn  { background: #EBF7F3; color: #2A9060; }
+.rt-amb  { background: #FEF7E6; color: #C08000; }
+.rec-body { font-size: 12px; color: #777; line-height: 1.6; }
+.rec-body strong { color: #333; font-weight: 600; }
+
+/* ── CTA ── */
+.cta-wrap { padding: 4px 14px 32px; }
+.cta-main {
+  display: block; width: 100%;
+  padding: 17px;
+  background: #3AADA8;
+  color: #fff;
+  border: none; border-radius: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+.cta-ghost {
+  display: block; width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: #3AADA8;
+  border: 1.5px solid #3AADA8;
+  border-radius: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Status + nav -->
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:flex;gap:4px;align-items:center">
+      <span>▮▮▮</span><span>5G</span>
+    </span>
+  </div>
+  <div class="navbar">
+    <div class="navbar-title">Your 3-Day Results</div>
+    <div class="navbar-close">✕</div>
+  </div>
+
+  <!-- Eyebrow -->
+  <div class="eyebrow">Nutritional summary</div>
+
+  <!-- Calorie card -->
+  <div class="cal-card">
+    <div class="cal-top">
+      <div class="cal-consumed">
+        <div class="cal-c-label">You ate on average</div>
+        <div><span class="cal-c-num">3,020</span><span class="cal-c-unit"> kcal/day</span></div>
+      </div>
+      <div class="cal-right">
+        <div class="cal-goal-label">Your guide</div>
+        <div class="cal-goal-val">2,000 kcal</div>
+        <div class="cal-over">+1,020 over ↑</div>
+      </div>
+    </div>
+    <div class="split-bar-wrap">
+      <div class="split-bar-labels">
+        <span>0</span>
+        <span>Goal · 2,000</span>
+        <span>3,020</span>
+      </div>
+      <div class="split-bar-track">
+        <div class="split-goal"></div>
+        <div class="split-over"></div>
+      </div>
+    </div>
+    <div class="cal-warning">
+      Eating <strong>1,020 kcal over your target daily</strong> means your body is storing the excess as fat — while your muscles remain underfed. Both things happen at once.
+    </div>
+  </div>
+
+  <!-- Nutrient bars -->
+  <div class="eyebrow" style="padding-top:4px;">Macros &amp; nutrients · daily avg</div>
+  <div class="nutrient-card">
+    <div class="nutrient-guide-row">
+      <span class="guide-label">GUIDE 100%</span>
+    </div>
+
+    <!-- CARBS: 152% -->
+    <div class="nrow">
+      <div class="nrow-name">Carbs</div>
+      <div class="nrow-bar-wrap">
+        <div class="nrow-bar-fill" style="width:100%; background: linear-gradient(90deg, #3AADA8 0%, #3AADA8 65%, #E05030 65%, #E05030 100%);">
+          320g
+        </div>
+      </div>
+      <div class="nrow-pct pct-over">152%</div>
+    </div>
+
+    <!-- SUGAR: 148% -->
+    <div class="nrow">
+      <div class="nrow-name">Sugar</div>
+      <div class="nrow-bar-wrap">
+        <div class="nrow-bar-fill" style="width:100%; background: linear-gradient(90deg, #3AADA8 0%, #3AADA8 67%, #E05030 67%, #E05030 100%);">
+          74g
+        </div>
+      </div>
+      <div class="nrow-pct pct-over">148%</div>
+    </div>
+
+    <!-- FAT: 130% -->
+    <div class="nrow">
+      <div class="nrow-name">Fat</div>
+      <div class="nrow-bar-wrap">
+        <div class="nrow-bar-fill" style="width:100%; background: linear-gradient(90deg, #3AADA8 0%, #3AADA8 77%, #E8A030 77%, #E8A030 100%);">
+          88g
+        </div>
+      </div>
+      <div class="nrow-pct pct-over">130%</div>
+    </div>
+
+    <!-- SAT FAT: 110% -->
+    <div class="nrow">
+      <div class="nrow-name">Sat fat</div>
+      <div class="nrow-bar-wrap">
+        <div class="nrow-bar-fill" style="width:100%; background: linear-gradient(90deg, #3AADA8 0%, #3AADA8 91%, #E8A030 91%, #E8A030 100%);">
+          22g
+        </div>
+      </div>
+      <div class="nrow-pct pct-warn">110%</div>
+    </div>
+
+    <!-- PROTEIN: 52% — flagged red (too low) -->
+    <div class="nrow" style="background:#FEF9F8;">
+      <div class="nrow-name" style="color:#E05030;font-weight:700;">Protein ⚠</div>
+      <div class="nrow-bar-wrap">
+        <div class="nrow-bar-fill" style="width:52%; background:#E05030; justify-content:flex-start; padding-left:8px;">
+          62g
+        </div>
+      </div>
+      <div class="nrow-pct pct-low">52%</div>
+    </div>
+
+    <!-- FIBRE: 47% -->
+    <div class="nrow">
+      <div class="nrow-name">Fibre</div>
+      <div class="nrow-bar-wrap">
+        <div class="nrow-bar-fill" style="width:47%; background:#C09000; justify-content:flex-start; padding-left:8px;">
+          12g
+        </div>
+      </div>
+      <div class="nrow-pct pct-warn">47%</div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Recommendations -->
+  <div class="eyebrow" style="padding-top:0;">What to change</div>
+  <div class="recs">
+
+    <div class="rec">
+      <div class="rec-left rl-red">🍗</div>
+      <div class="rec-right">
+        <div class="rec-tag rt-red">Priority · for 40+</div>
+        <div class="rec-title">More than double your protein</div>
+        <div class="rec-body">You need ~120g daily. At 62g you're at <strong>half</strong>. In perimenopause, low protein directly causes muscle loss — which slows metabolism and increases fat. Add eggs, Greek yogurt, chicken or lentils to every meal.</div>
+      </div>
+    </div>
+
+    <div class="rec">
+      <div class="rec-left rl-red">🍞</div>
+      <div class="rec-right">
+        <div class="rec-tag rt-red">Cut back</div>
+        <div class="rec-title">Carbs are 52% over your guide</div>
+        <div class="rec-body"><strong>320g vs 210g target.</strong> Excess carbs convert to stored fat, especially around the abdomen during perimenopause. Swap white rice, pasta and bread for smaller portions of wholegrains or legumes.</div>
+      </div>
+    </div>
+
+    <div class="rec">
+      <div class="rec-left rl-amb">🌿</div>
+      <div class="rec-right">
+        <div class="rec-tag rt-amb">Watch</div>
+        <div class="rec-title">Fibre is less than half of target</div>
+        <div class="rec-body">12g vs 25g. Fibre helps regulate blood sugar and gut hormones — both disrupted in perimenopause. <strong>Add:</strong> oats, flaxseeds, broccoli or chickpeas at one meal a day.</div>
+      </div>
+    </div>
+
+    <div class="rec">
+      <div class="rec-left rl-grn">✅</div>
+      <div class="rec-right">
+        <div class="rec-tag rt-grn">Positive</div>
+        <div class="rec-title">You're logging consistently</div>
+        <div class="rec-body">3 full days tracked. That's the foundation. The data above is only useful because you were honest about what you ate.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-wrap">
+    <button class="cta-main">See your body composition →</button>
+    <button class="cta-ghost">Adjust my calorie goal</button>
+  </div>
+
+</div>
+</body>
+</html>
