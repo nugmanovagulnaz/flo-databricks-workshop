@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #E8E8EC;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 64px;
+  min-height: 100vh;
+}
+
+.phone {
+  width: 375px;
+  background: #F5F4F0;
+  border-radius: 48px;
+  overflow: hidden;
+  box-shadow: 0 32px 96px rgba(0,0,0,0.22);
+}
+
+.statusbar {
+  background: #3AADA8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 26px 12px;
+  font-size: 12px; font-weight: 600; color: #fff;
+}
+
+.navbar {
+  background: #3AADA8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px 18px;
+}
+.navbar-title { font-size: 17px; font-weight: 600; color: #fff; }
+
+.date-strip {
+  background: #fff;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #F0EEF0;
+}
+.date-strip-label { font-size: 13px; font-weight: 600; color: #333; }
+.date-strip-sub   { font-size: 11px; color: #999; margin-top: 2px; }
+
+.eyebrow {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: #3AADA8; padding: 20px 20px 10px;
+}
+
+.log-card {
+  margin: 0 14px 14px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.log-row {
+  display: flex;
+  align-items: center;
+  padding: 15px 18px;
+  border-bottom: 1px solid #F5F3F0;
+  cursor: pointer;
+  gap: 14px;
+}
+.log-row:last-child { border-bottom: none; }
+.log-row.done { background: #F7FDF8; }
+
+.log-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.li-teal  { background: #E6F5F4; }
+.li-amber { background: #FEF7E6; }
+.li-red   { background: #FDECEA; }
+
+.log-body { flex: 1; min-width: 0; }
+.log-title { font-size: 14px; font-weight: 600; color: #222; }
+.log-sub   { font-size: 12px; color: #aaa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.log-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.log-badge {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 99px;
+  background: #F0EEF0; color: #bbb;
+}
+.lb-done { background: #EBF7F3; color: #2A9060; }
+.log-chevron { font-size: 18px; color: #ddd; }
+
+.cta-wrap { padding: 8px 14px 36px; }
+.cta-main {
+  display: block; width: 100%;
+  padding: 17px;
+  background: #3AADA8; color: #fff;
+  border: none; border-radius: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; text-align: center;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-sheet {
+  background: #fff;
+  width: 375px;
+  border-radius: 24px 24px 0 0;
+  padding-bottom: 40px;
+}
+.modal-handle {
+  width: 40px; height: 4px;
+  background: #E0DED8; border-radius: 99px;
+  margin: 14px auto 0;
+}
+.modal-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #F2F1EE;
+  display: flex; align-items: center; gap: 12px;
+}
+.modal-header-icon { font-size: 24px; }
+.modal-header-title { font-size: 16px; font-weight: 700; color: #222; }
+.modal-header-sub   { font-size: 12px; color: #999; margin-top: 2px; }
+.modal-close {
+  margin-left: auto; font-size: 20px; color: #bbb;
+  cursor: pointer; background: none; border: none; padding: 4px 8px;
+}
+
+.modal-body { padding: 20px 20px 0; }
+
+.field-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #999; margin-bottom: 8px;
+}
+.field-textarea {
+  width: 100%;
+  padding: 14px;
+  background: #F5F4F0;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; color: #222; line-height: 1.5;
+  outline: none; resize: none;
+  transition: border-color 0.15s;
+}
+.field-textarea:focus { border-color: #3AADA8; background: #fff; }
+.field-textarea::placeholder { color: #bbb; }
+
+.field-hint { font-size: 12px; color: #bbb; margin-top: 8px; line-height: 1.5; }
+
+/* Nutrition preview (shown after AI parse) */
+.nutrition-preview {
+  display: none;
+  margin-top: 12px;
+  background: #F0FBF9;
+  border: 1.5px solid #B0E0DC;
+  border-radius: 12px;
+  padding: 12px 14px;
+  gap: 0;
+}
+.nutrition-preview.visible { display: block; }
+.np-title { font-size: 11px; font-weight: 700; color: #3AADA8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.np-row { display: flex; justify-content: space-between; font-size: 13px; color: #555; margin-bottom: 4px; }
+.np-row:last-child { margin-bottom: 0; }
+.np-val { font-family: 'DM Mono', monospace; font-weight: 600; color: #222; }
+
+.modal-submit {
+  display: block;
+  margin: 16px 20px 0;
+  width: calc(100% - 40px);
+  padding: 16px;
+  background: #3AADA8; color: #fff;
+  border: none; border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.modal-submit:disabled { opacity: 0.5; cursor: default; }
+
+/* Weight modal specific */
+.weight-input {
+  width: 100%;
+  padding: 20px 14px;
+  background: #F5F4F0;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 40px; font-weight: 500;
+  text-align: center; color: #222;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.weight-input:focus { border-color: #3AADA8; background: #fff; }
+.weight-unit { text-align: center; font-size: 14px; color: #aaa; margin-top: 6px; }
+
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: #222; color: #fff;
+  padding: 10px 20px; border-radius: 99px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+  white-space: nowrap; z-index: 200;
+}
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:flex;gap:4px;align-items:center"><span>▮▮▮</span><span>5G</span></span>
+  </div>
+  <div class="navbar">
+    <div class="navbar-title">Log Today</div>
+  </div>
+
+  <div class="date-strip">
+    <div>
+      <div class="date-strip-label" id="date-label">Monday, 9 June</div>
+      <div class="date-strip-sub">Tap any section to log</div>
+    </div>
+    <div style="font-size:22px">📅</div>
+  </div>
+
+  <div class="eyebrow">Food &amp; meals</div>
+  <div class="log-card">
+    <div class="log-row" id="row-breakfast" onclick="openModal('breakfast')">
+      <div class="log-icon li-teal">🌅</div>
+      <div class="log-body">
+        <div class="log-title">Log Breakfast</div>
+        <div class="log-sub" id="sub-breakfast">Not logged yet</div>
+      </div>
+      <div class="log-right">
+        <span class="log-badge" id="badge-breakfast">+ Add</span>
+        <span class="log-chevron">›</span>
+      </div>
+    </div>
+    <div class="log-row" id="row-lunch" onclick="openModal('lunch')">
+      <div class="log-icon li-teal">☀️</div>
+      <div class="log-body">
+        <div class="log-title">Log Lunch</div>
+        <div class="log-sub" id="sub-lunch">Not logged yet</div>
+      </div>
+      <div class="log-right">
+        <span class="log-badge" id="badge-lunch">+ Add</span>
+        <span class="log-chevron">›</span>
+      </div>
+    </div>
+    <div class="log-row" id="row-dinner" onclick="openModal('dinner')">
+      <div class="log-icon li-teal">🌙</div>
+      <div class="log-body">
+        <div class="log-title">Log Dinner</div>
+        <div class="log-sub" id="sub-dinner">Not logged yet</div>
+      </div>
+      <div class="log-right">
+        <span class="log-badge" id="badge-dinner">+ Add</span>
+        <span class="log-chevron">›</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="eyebrow">Body measurements</div>
+  <div class="log-card">
+    <div class="log-row" id="row-weight" onclick="openModal('weight')">
+      <div class="log-icon li-amber">⚖️</div>
+      <div class="log-body">
+        <div class="log-title">Add Weight</div>
+        <div class="log-sub" id="sub-weight">Not logged yet</div>
+      </div>
+      <div class="log-right">
+        <span class="log-badge" id="badge-weight">+ Add</span>
+        <span class="log-chevron">›</span>
+      </div>
+    </div>
+    <div class="log-row" id="row-body" onclick="openModal('body')">
+      <div class="log-icon li-red">📊</div>
+      <div class="log-body">
+        <div class="log-title">Add Body Parameters</div>
+        <div class="log-sub" id="sub-body">Muscle mass · Body fat · Vis...</div>
+      </div>
+      <div class="log-right">
+        <span class="log-badge" id="badge-body">+ Add</span>
+        <span class="log-chevron">›</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <button class="cta-main" onclick="window.location.href='screen1_food_results.html'">See my results →</button>
+  </div>
+
+</div>
+
+<!-- Meal modals (breakfast / lunch / dinner share same structure) -->
+<div class="modal-overlay" id="modal-breakfast">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-header-icon">🌅</span>
+      <div>
+        <div class="modal-header-title">Log Breakfast</div>
+        <div class="modal-header-sub">Just describe what you ate</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('breakfast')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-label">What did you eat?</div>
+      <textarea class="field-textarea" id="bf-desc" rows="3"
+        placeholder="e.g. 2 scrambled eggs, whole wheat toast, coffee with oat milk"></textarea>
+      <div class="field-hint">We'll calculate the calories and macros automatically</div>
+      <div class="nutrition-preview" id="bf-preview">
+        <div class="np-title">Nutrition estimate</div>
+        <div class="np-row"><span>Calories</span><span class="np-val" id="bf-kcal">—</span></div>
+        <div class="np-row"><span>Protein</span><span class="np-val" id="bf-protein">—</span></div>
+        <div class="np-row"><span>Carbs</span><span class="np-val" id="bf-carbs">—</span></div>
+        <div class="np-row"><span>Fat</span><span class="np-val" id="bf-fat">—</span></div>
+      </div>
+    </div>
+    <button class="modal-submit" id="bf-submit" onclick="saveMeal('breakfast')">Analyse &amp; Save</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-lunch">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-header-icon">☀️</span>
+      <div>
+        <div class="modal-header-title">Log Lunch</div>
+        <div class="modal-header-sub">Just describe what you ate</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('lunch')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-label">What did you eat?</div>
+      <textarea class="field-textarea" id="lu-desc" rows="3"
+        placeholder="e.g. grilled chicken salad with olive oil, sparkling water"></textarea>
+      <div class="field-hint">We'll calculate the calories and macros automatically</div>
+      <div class="nutrition-preview" id="lu-preview">
+        <div class="np-title">Nutrition estimate</div>
+        <div class="np-row"><span>Calories</span><span class="np-val" id="lu-kcal">—</span></div>
+        <div class="np-row"><span>Protein</span><span class="np-val" id="lu-protein">—</span></div>
+        <div class="np-row"><span>Carbs</span><span class="np-val" id="lu-carbs">—</span></div>
+        <div class="np-row"><span>Fat</span><span class="np-val" id="lu-fat">—</span></div>
+      </div>
+    </div>
+    <button class="modal-submit" id="lu-submit" onclick="saveMeal('lunch')">Analyse &amp; Save</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-dinner">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-header-icon">🌙</span>
+      <div>
+        <div class="modal-header-title">Log Dinner</div>
+        <div class="modal-header-sub">Just describe what you ate</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('dinner')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-label">What did you eat?</div>
+      <textarea class="field-textarea" id="di-desc" rows="3"
+        placeholder="e.g. baked salmon with roasted broccoli and quinoa"></textarea>
+      <div class="field-hint">We'll calculate the calories and macros automatically</div>
+      <div class="nutrition-preview" id="di-preview">
+        <div class="np-title">Nutrition estimate</div>
+        <div class="np-row"><span>Calories</span><span class="np-val" id="di-kcal">—</span></div>
+        <div class="np-row"><span>Protein</span><span class="np-val" id="di-protein">—</span></div>
+        <div class="np-row"><span>Carbs</span><span class="np-val" id="di-carbs">—</span></div>
+        <div class="np-row"><span>Fat</span><span class="np-val" id="di-fat">—</span></div>
+      </div>
+    </div>
+    <button class="modal-submit" id="di-submit" onclick="saveMeal('dinner')">Analyse &amp; Save</button>
+  </div>
+</div>
+
+<!-- Weight modal -->
+<div class="modal-overlay" id="modal-weight">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-header-icon">⚖️</span>
+      <div>
+        <div class="modal-header-title">Add Weight</div>
+        <div class="modal-header-sub">Weigh in the morning before eating</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('weight')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input class="weight-input" id="wt-val" type="number" step="0.1" min="30" max="250" placeholder="82.0" />
+      <div class="weight-unit">kg</div>
+    </div>
+    <button class="modal-submit" onclick="saveWeight()">Save Weight</button>
+  </div>
+</div>
+
+<!-- Body parameters modal -->
+<div class="modal-overlay" id="modal-body">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-header-icon">📊</span>
+      <div>
+        <div class="modal-header-title">Body Parameters</div>
+        <div class="modal-header-sub">From your smart scale or body scan</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('body')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div class="field-label">Muscle mass (kg)</div>
+          <input style="width:100%;padding:13px 14px;background:#F5F4F0;border:1.5px solid transparent;border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:#222;outline:none;" id="bp-muscle" type="number" step="0.1" placeholder="e.g. 29" />
+          <div class="field-hint">Target: 36+ kg</div>
+        </div>
+        <div>
+          <div class="field-label">Body fat (%)</div>
+          <input style="width:100%;padding:13px 14px;background:#F5F4F0;border:1.5px solid transparent;border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:#222;outline:none;" id="bp-fat" type="number" step="0.1" placeholder="e.g. 38" />
+          <div class="field-hint">Target: below 30%</div>
+        </div>
+        <div>
+          <div class="field-label">Visceral fat level</div>
+          <input style="width:100%;padding:13px 14px;background:#F5F4F0;border:1.5px solid transparent;border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:#222;outline:none;" id="bp-visceral" type="number" step="1" min="1" max="30" placeholder="e.g. 11" />
+          <div class="field-hint">Scale 1–30 · Target: below 9</div>
+        </div>
+      </div>
+    </div>
+    <button class="modal-submit" onclick="saveBody()">Save Body Parameters</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TODAY = new Date().toISOString().slice(0, 10);
+
+// Date label
+const now = new Date();
+const DN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+document.getElementById('date-label').textContent = DN[now.getDay()] + ', ' + now.getDate() + ' ' + MN[now.getMonth()];
+
+function getStore() { return JSON.parse(localStorage.getItem('flo_log') || '{}'); }
+function setStore(d) { localStorage.setItem('flo_log', JSON.stringify(d)); }
+function getDay() {
+  const s = getStore();
+  s.days = s.days || {};
+  s.days[TODAY] = s.days[TODAY] || {};
+  return s;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function openModal(id) { document.getElementById('modal-' + id).classList.add('open'); }
+function closeModal(id) { document.getElementById('modal-' + id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el =>
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+);
+
+const mealPrefix = { breakfast: 'bf', lunch: 'lu', dinner: 'di' };
+const mealEmoji  = { breakfast: '🌅', lunch: '☀️', dinner: '🌙' };
+
+async function saveMeal(meal) {
+  const p   = mealPrefix[meal];
+  const desc = document.getElementById(p + '-desc').value.trim();
+  if (!desc) { showToast('Describe what you ate first'); return; }
+
+  const btn = document.getElementById(p + '-submit');
+  btn.textContent = 'Analysing…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/parse-meal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description: desc })
+    });
+
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+
+    // Show nutrition preview
+    document.getElementById(p + '-kcal').textContent    = data.kcal    + ' kcal';
+    document.getElementById(p + '-protein').textContent = data.protein  + 'g';
+    document.getElementById(p + '-carbs').textContent   = data.carbs    + 'g';
+    document.getElementById(p + '-fat').textContent     = data.fat      + 'g';
+    document.getElementById(p + '-preview').classList.add('visible');
+
+    // Save to localStorage
+    const s = getDay();
+    s.days[TODAY][meal] = {
+      desc:    data.dish_name || desc,
+      kcal:    data.kcal,
+      protein: data.protein,
+      carbs:   data.carbs,
+      fat:     data.fat,
+    };
+    setStore(s);
+
+    // Update row
+    document.getElementById('sub-' + meal).textContent = data.kcal + ' kcal · ' + data.protein + 'g protein';
+    document.getElementById('badge-' + meal).textContent = '✓ Done';
+    document.getElementById('badge-' + meal).className = 'log-badge lb-done';
+    document.getElementById('row-' + meal).classList.add('done');
+
+    // Short pause to show preview, then close
+    await new Promise(r => setTimeout(r, 900));
+    closeModal(meal);
+    showToast((meal.charAt(0).toUpperCase() + meal.slice(1)) + ' saved');
+
+  } catch (e) {
+    showToast('Could not analyse — check connection and try again');
+  } finally {
+    btn.textContent = 'Analyse & Save';
+    btn.disabled = false;
+  }
+}
+
+function saveWeight() {
+  const val = parseFloat(document.getElementById('wt-val').value);
+  if (!val || val < 30 || val > 250) { showToast('Enter a valid weight (30–250 kg)'); return; }
+  const s = getDay();
+  s.days[TODAY].weight = val;
+  setStore(s);
+  document.getElementById('sub-weight').textContent = val + ' kg · logged today';
+  document.getElementById('badge-weight').textContent = '✓ Done';
+  document.getElementById('badge-weight').className = 'log-badge lb-done';
+  document.getElementById('row-weight').classList.add('done');
+  closeModal('weight');
+  showToast('Weight saved');
+}
+
+function saveBody() {
+  const muscle   = parseFloat(document.getElementById('bp-muscle').value);
+  const bodyFat  = parseFloat(document.getElementById('bp-fat').value);
+  const visceral = parseFloat(document.getElementById('bp-visceral').value);
+  if (!muscle && !bodyFat && !visceral) { showToast('Enter at least one measurement'); return; }
+  const s = getDay();
+  s.days[TODAY].body = { muscle: muscle||null, bodyFat: bodyFat||null, visceralFat: visceral||null };
+  setStore(s);
+  const parts = [];
+  if (muscle)   parts.push(muscle + ' kg muscle');
+  if (bodyFat)  parts.push(bodyFat + '% fat');
+  if (visceral) parts.push('visceral ' + visceral);
+  document.getElementById('sub-body').textContent = parts.join(' · ');
+  document.getElementById('badge-body').textContent = '✓ Done';
+  document.getElementById('badge-body').className = 'log-badge lb-done';
+  document.getElementById('row-body').classList.add('done');
+  closeModal('body');
+  showToast('Body parameters saved');
+}
+
+// Restore state on load
+(function restoreState() {
+  const s = getStore();
+  const day = s.days?.[TODAY];
+  if (!day) return;
+  ['breakfast','lunch','dinner'].forEach(meal => {
+    if (day[meal]) {
+      const m = day[meal];
+      document.getElementById('sub-' + meal).textContent = m.kcal + ' kcal · ' + m.protein + 'g protein';
+      document.getElementById('badge-' + meal).textContent = '✓ Done';
+      document.getElementById('badge-' + meal).className = 'log-badge lb-done';
+      document.getElementById('row-' + meal).classList.add('done');
+    }
+  });
+  if (day.weight) {
+    document.getElementById('sub-weight').textContent = day.weight + ' kg · logged today';
+    document.getElementById('badge-weight').textContent = '✓ Done';
+    document.getElementById('badge-weight').className = 'log-badge lb-done';
+    document.getElementById('row-weight').classList.add('done');
+  }
+  if (day.body) {
+    const b = day.body;
+    const parts = [];
+    if (b.muscle)      parts.push(b.muscle + ' kg muscle');
+    if (b.bodyFat)     parts.push(b.bodyFat + '% fat');
+    if (b.visceralFat) parts.push('visceral ' + b.visceralFat);
+    document.getElementById('sub-body').textContent = parts.join(' · ') || 'Logged';
+    document.getElementById('badge-body').textContent = '✓ Done';
+    document.getElementById('badge-body').className = 'log-badge lb-done';
+    document.getElementById('row-body').classList.add('done');
+  }
+})();
+</script>
+</body>
+</html>

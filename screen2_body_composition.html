@@ -482,9 +482,156 @@ body {
 
   <!-- CTA -->
   <div class="cta-wrap">
-    <button class="cta-commit">I'm committed — show me how</button>
+    <button class="cta-commit" onclick="window.location.href='screen3_meal_plan.html'">I'm committed — show me how</button>
   </div>
 
 </div>
+
+<script>
+(function () {
+  const store = JSON.parse(localStorage.getItem('flo_log') || '{}');
+  const days  = store.days || {};
+  const dayKeys = Object.keys(days).sort();
+  if (dayKeys.length === 0) return;
+
+  // Most recent weight and body params
+  const latestWeight = dayKeys.slice().reverse().map(k => days[k].weight).find(v => v);
+  const latestBody   = dayKeys.slice().reverse().map(k => days[k].body).find(v => v);
+  if (!latestWeight && !latestBody) return;
+
+  const HEIGHT = 168;
+  const AGE    = 47;
+  const w      = latestWeight || 82;
+  const muscle      = latestBody?.muscle      ?? 29;
+  const bodyFat     = latestBody?.bodyFat     ?? 38;
+  const visceralFat = latestBody?.visceralFat ?? 11;
+
+  // Derived
+  const bmi = +(w / (HEIGHT / 100) ** 2).toFixed(1);
+  const idealWeight = Math.round(24.5 * (HEIGHT / 100) ** 2);
+  const toGo = Math.max(0, Math.round(w - idealWeight));
+
+  // Body score (0–100)
+  let score = 100;
+  score -= Math.max(0, (bodyFat  - 30) * 1.5);
+  score -= Math.max(0, (36 - muscle)   * 2.5);
+  score -= Math.max(0, (visceralFat - 9) * 2);
+  score -= Math.max(0, (bmi - 25) * 2);
+  score  = Math.round(Math.max(0, Math.min(100, score)));
+
+  // Body age
+  let bodyAge = AGE;
+  bodyAge += Math.max(0, (bodyFat  - 30) * 0.4);
+  bodyAge += Math.max(0, (36 - muscle)   * 0.5);
+  bodyAge += Math.max(0, (visceralFat - 9) * 0.4);
+  bodyAge  = Math.round(bodyAge);
+  const ageDelta = bodyAge - AGE;
+
+  // Score color
+  const color = score >= 70 ? '#2A9060' : score >= 50 ? '#C08000' : '#E05030';
+
+  // ── Hero ──
+  document.querySelector('.sh-score').textContent = score;
+  document.querySelector('.sh-score').style.color = color;
+  document.querySelector('.sh-weight').textContent = w + ' kg · ' + HEIGHT + ' cm';
+  document.querySelector('.ba-num').textContent = bodyAge;
+  document.querySelector('.ba-num').style.color = color;
+  document.querySelector('.ba-caption').textContent =
+    'You are ' + AGE + (ageDelta > 0 ? ' ↑+' + ageDelta : ageDelta < 0 ? ' ↓' + Math.abs(ageDelta) : ' · on track');
+  document.querySelector('.body-age-box').style.borderColor = color === '#2A9060' ? '#A0D8C0' : color === '#C08000' ? '#F0C070' : '#F0C0B0';
+  document.querySelector('.body-age-box').style.background  = color === '#2A9060' ? '#F0FBF6' : color === '#C08000' ? '#FEF9EC' : '#FEF3F0';
+
+  const verdictEl = document.querySelector('.sh-verdict');
+  if (score >= 70) {
+    verdictEl.textContent = '✅ Your body is on a healthy track — keep going';
+    verdictEl.style.background = '#EBF7F3'; verdictEl.style.color = '#2A9060';
+  } else if (score >= 50) {
+    verdictEl.textContent = '⚠️ Some areas need attention — you can turn this around';
+    verdictEl.style.background = '#FEF9E6'; verdictEl.style.color = '#C08000';
+  } else {
+    verdictEl.textContent = '⚠️ Your body is ageing faster than it should be';
+    verdictEl.style.background = '#FEF3F0'; verdictEl.style.color = '#E05030';
+  }
+
+  // ── Weight bar ──
+  const barPct = Math.min(93, Math.max(3, (w - 53) / (100 - 53) * 100));
+  document.querySelector('.ws-pin').style.left = barPct + '%';
+  document.querySelector('.ws-ideal').innerHTML =
+    'Ideal weight: <span>' + idealWeight + ' kg</span>' +
+    (toGo > 0 ? ' &nbsp;·&nbsp; ' + toGo + ' kg to go' : ' &nbsp;·&nbsp; You\'re at your target!');
+
+  // Zone highlight
+  const zones = document.querySelectorAll('.ws-zone');
+  zones.forEach(z => { z.style.color = '#999'; z.style.fontWeight = ''; z.textContent = z.textContent.replace(' ←',''); });
+  let zoneIdx = 0;
+  if (w < 58) zoneIdx = 0;
+  else if (w < 72) zoneIdx = 1;
+  else if (w < 87) zoneIdx = 2;
+  else zoneIdx = 3;
+  if (zones[zoneIdx]) {
+    zones[zoneIdx].style.color = '#E05030';
+    zones[zoneIdx].style.fontWeight = '700';
+    zones[zoneIdx].textContent += ' ←';
+  }
+
+  // ── Body params rows ──
+  // Order in HTML: Muscle mass, Body fat, Visceral fat, Bone mass, Body water, BMI, Basal metabolism
+  const rows = document.querySelectorAll('.prow');
+
+  function updateRow(row, valText, statusText, statusClass) {
+    const valEl    = row.querySelector('.prow-val');
+    const statEl   = row.querySelector('.prow-status');
+    if (valEl)  valEl.textContent  = valText;
+    if (statEl) { statEl.textContent = statusText; statEl.className = 'prow-status ' + statusClass; }
+  }
+
+  // Muscle mass (row 0)
+  const muscleTarget = 36;
+  const muscleStatus = muscle >= muscleTarget ? ['OK','ps-ok'] : muscle >= 32 ? ['Watch','ps-warn'] : ['Too low','ps-high'];
+  const muscleNameEl = rows[0].querySelector('.prow-name');
+  if (muscle < muscleTarget) {
+    muscleNameEl.textContent = 'Muscle mass ↓';
+    muscleNameEl.classList.add('prow-name-alert');
+    rows[0].classList.add('prow-highlight');
+  } else {
+    muscleNameEl.textContent = 'Muscle mass';
+    muscleNameEl.classList.remove('prow-name-alert');
+    rows[0].classList.remove('prow-highlight');
+  }
+  updateRow(rows[0], muscle + ' kg · need ' + muscleTarget + '+ kg', muscleStatus[0], muscleStatus[1]);
+
+  // Body fat (row 1)
+  const fatStatus = bodyFat < 30 ? ['OK','ps-ok'] : bodyFat < 35 ? ['Watch','ps-warn'] : ['High','ps-high'];
+  updateRow(rows[1], bodyFat + '% · target <30%', fatStatus[0], fatStatus[1]);
+
+  // Visceral fat (row 2)
+  const vfStatus = visceralFat < 9 ? ['OK','ps-ok'] : visceralFat < 12 ? ['High','ps-warn'] : ['High','ps-high'];
+  updateRow(rows[2], 'Level ' + visceralFat + ' · target <9', vfStatus[0], vfStatus[1]);
+
+  // BMI (row 5)
+  const bmiStatus = bmi < 18.5 ? ['Underweight','ps-low'] : bmi < 25 ? ['Normal','ps-ok'] : bmi < 30 ? ['Overweight','ps-warn'] : ['Obese','ps-high'];
+  updateRow(rows[5], String(bmi), bmiStatus[0], bmiStatus[1]);
+
+  // ── Muscle callout ──
+  const muscleShort = Math.max(0, +(muscleTarget - muscle).toFixed(1));
+  document.querySelector('.ma-body').innerHTML = muscleShort > 0
+    ? 'At ' + muscle + ' kg of muscle — <strong>' + muscleShort + ' kg below where you should be</strong> — your metabolism is slower than it needs to be. This means your body burns fewer calories at rest and stores more as fat, even when you\'re not overeating. During perimenopause, this accelerates without active resistance to it.'
+    : 'Your muscle mass is at a <strong>healthy level</strong>. Keep it up with regular resistance training — muscle mass tends to decline without active effort during perimenopause.';
+
+  // ── Goal card current values ──
+  const gcNows = document.querySelectorAll('.gc-now');
+  if (gcNows[0]) gcNows[0].textContent = w + ' kg';
+  if (gcNows[1]) gcNows[1].textContent = muscle + ' kg';
+  if (gcNows[2]) gcNows[2].textContent = bodyFat + '%';
+  if (gcNows[3]) gcNows[3].textContent = String(bodyAge);
+
+  // Goal targets (keep aspirational)
+  const gcTargets = document.querySelectorAll('.gc-target');
+  if (gcTargets[0]) gcTargets[0].textContent = idealWeight + ' kg';
+  if (gcTargets[1]) gcTargets[1].textContent = Math.max(muscle, muscleTarget) + ' kg';
+  if (gcTargets[2]) gcTargets[2].textContent = '30%';
+  if (gcTargets[3]) gcTargets[3].textContent = String(AGE);
+})();
+</script>
 </body>
 </html>

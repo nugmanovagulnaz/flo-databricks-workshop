@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #EEECEA;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 64px;
+  min-height: 100vh;
+}
+
+.phone {
+  width: 375px;
+  background: #F5F4F0;
+  border-radius: 48px;
+  overflow: hidden;
+  box-shadow: 0 32px 96px rgba(0,0,0,0.22);
+}
+
+/* Status bar */
+.statusbar {
+  background: #3AADA8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 26px 12px;
+  font-size: 12px; font-weight: 600; color: #fff;
+}
+
+/* Nav */
+.navbar {
+  background: #3AADA8;
+  display: flex;
+  align-items: center;
+  padding: 0 20px 14px;
+  position: relative;
+}
+.navbar-back { font-size: 22px; color: rgba(255,255,255,0.85); cursor: pointer; margin-right: 12px; }
+.navbar-title { font-size: 17px; font-weight: 600; color: #fff; }
+
+/* Personalised strip */
+.pers-strip {
+  background: #3AADA8;
+  text-align: center;
+  padding: 8px 20px 16px;
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9);
+  letter-spacing: 0.03em;
+}
+
+/* Scroll body */
+.scroll-body { padding: 14px 14px 0; }
+
+/* Cycle phase card */
+.cycle-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  border-left: 4px solid #9B6FC5;
+}
+.cycle-icon {
+  width: 44px; height: 44px;
+  background: #F3EEF9;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.cycle-body {}
+.cycle-eyebrow {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #9B6FC5; margin-bottom: 4px;
+}
+.cycle-title { font-size: 17px; font-weight: 700; color: #222; margin-bottom: 4px; }
+.cycle-desc  { font-size: 12px; color: #777; line-height: 1.5; }
+
+/* Protein target banner */
+.protein-banner {
+  background: #1C1B22;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pb-text {
+  font-size: 14px; font-weight: 500; color: #DDD;
+  flex: 1;
+}
+.pb-text strong { color: #fff; font-weight: 700; }
+.pb-chip {
+  font-size: 11px; font-weight: 700;
+  padding: 5px 10px; border-radius: 99px;
+  white-space: nowrap;
+}
+.pbc-muscle { background: #1E3A2F; color: #4CC98A; }
+.pbc-fat    { background: #3A1E1E; color: #F07050; }
+
+/* Day selector */
+.day-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.day-selector::-webkit-scrollbar { display: none; }
+.day-pill {
+  flex-shrink: 0;
+  padding: 7px 16px;
+  border-radius: 99px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  background: #fff;
+  color: #666;
+  position: relative;
+}
+.day-pill.active { background: #3AADA8; color: #fff; }
+.day-pill .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #3AADA8;
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+  margin-top: -2px;
+}
+.day-pill.active .dot { background: rgba(255,255,255,0.7); }
+
+/* Section heading */
+.section-heading {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #3AADA8; margin-bottom: 12px;
+}
+
+/* Meal card */
+.meal-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.meal-header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.meal-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.mi-yellow { background: #FEFAE6; }
+.mi-teal   { background: #E6F5F4; }
+.mi-purple { background: #F3EEF9; }
+.mi-orange { background: #FEF3EE; }
+
+.meal-header-body { flex: 1; min-width: 0; }
+.meal-time {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #bbb; margin-bottom: 3px;
+}
+.meal-name { font-size: 15px; font-weight: 700; color: #1A1A22; line-height: 1.3; }
+
+.meal-stats { text-align: right; flex-shrink: 0; }
+.meal-protein {
+  font-size: 13px; font-weight: 700; color: #3AADA8;
+  white-space: nowrap;
+}
+.meal-kcal { font-size: 12px; color: #aaa; margin-top: 2px; white-space: nowrap; }
+
+/* Ingredients */
+.meal-ingredients {
+  font-size: 13px; color: #555; line-height: 1.7;
+  margin-bottom: 12px;
+}
+.meal-ingredients strong { color: #1A1A22; font-weight: 700; }
+
+/* Tags */
+.meal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tag {
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 99px;
+  display: flex; align-items: center; gap: 4px;
+}
+.tag-cycle  { background: #F0EBF8; color: #7B4FB5; }
+.tag-muscle { background: #E6F5F4; color: #2A8A85; }
+.tag-fat    { background: #FEF0EB; color: #C05030; }
+.tag-energy { background: #FEF9E6; color: #A07020; }
+
+/* Swap button */
+.meal-actions { display: flex; align-items: center; gap: 12px; }
+.btn-swap {
+  font-size: 12px; font-weight: 600; color: #888;
+  background: none;
+  border: 1.5px solid #E0DED8;
+  border-radius: 99px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.btn-swap:before { content: '↺ '; }
+.action-hint { font-size: 12px; color: #ccc; }
+
+/* Snack card — lighter variant */
+.snack-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 13px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px dashed #E8E6E2;
+}
+.snack-icon { font-size: 20px; flex-shrink: 0; }
+.snack-body { flex: 1; }
+.snack-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #ccc; margin-bottom: 3px;
+}
+.snack-name { font-size: 13px; font-weight: 600; color: #444; }
+.snack-protein { font-size: 12px; font-weight: 700; color: #3AADA8; white-space: nowrap; }
+
+/* Daily totals bar */
+.totals-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.totals-title { font-size: 12px; font-weight: 700; color: #999; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+.totals-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.totals-label { font-size: 13px; color: #666; }
+.totals-val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: #222; }
+.totals-val.good { color: #2A9060; }
+.totals-val.warn { color: #C08000; }
+.progress-wrap { margin-top: 10px; }
+.progress-bar { height: 6px; background: #F0EFEB; border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+.progress-fill { height: 100%; border-radius: 99px; background: #3AADA8; }
+
+/* CTA */
+.cta-wrap { padding: 6px 14px 36px; }
+.cta-main {
+  display: block; width: 100%;
+  padding: 17px;
+  background: #3AADA8; color: #fff;
+  border: none; border-radius: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; text-align: center;
+  margin-bottom: 10px;
+}
+.cta-ghost {
+  display: block; width: 100%;
+  padding: 13px;
+  background: transparent; color: #999;
+  border: 1.5px solid #DDD;
+  border-radius: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:flex;gap:4px;align-items:center"><span>▮▮▮</span><span>5G</span></span>
+  </div>
+  <div class="navbar">
+    <div class="navbar-back" onclick="history.back()">‹</div>
+    <div class="navbar-title">Your Meal Plan</div>
+  </div>
+  <div class="pers-strip">Personalised for your body &amp; cycle</div>
+
+  <div class="scroll-body">
+
+    <!-- Cycle phase -->
+    <div class="cycle-card">
+      <div class="cycle-icon">🌙</div>
+      <div class="cycle-body">
+        <div class="cycle-eyebrow">Cycle phase · Day 22</div>
+        <div class="cycle-title">Luteal phase</div>
+        <div class="cycle-desc">Magnesium &amp; complex carbs reduce bloating and support mood today</div>
+      </div>
+    </div>
+
+    <!-- Protein target banner -->
+    <div class="protein-banner">
+      <div class="pb-text">Today: hit <strong id="protein-target">120g protein</strong></div>
+      <span class="pb-chip pbc-muscle">💪 +Muscle</span>
+      <span class="pb-chip pbc-fat">🔥 −Fat</span>
+    </div>
+
+    <!-- Day selector -->
+    <div class="day-selector">
+      <div class="day-pill"><span class="dot"></span>Mon</div>
+      <div class="day-pill active"><span class="dot"></span>Tue</div>
+      <div class="day-pill"><span class="dot"></span>Wed</div>
+      <div class="day-pill">Thu</div>
+      <div class="day-pill">Fri</div>
+    </div>
+
+    <!-- Section heading -->
+    <div class="section-heading" id="day-heading">Today's meals · Tue 10 June</div>
+
+    <!-- Breakfast -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-icon mi-yellow">🌅</div>
+        <div class="meal-header-body">
+          <div class="meal-time">Breakfast · 7–9am</div>
+          <div class="meal-name">Greek yogurt bowl with seeds &amp; nuts</div>
+        </div>
+        <div class="meal-stats">
+          <div class="meal-protein">35g protein</div>
+          <div class="meal-kcal">380 kcal</div>
+        </div>
+      </div>
+      <div class="meal-ingredients">
+        <strong>200g</strong> full-fat Greek yogurt · <strong>2 tbsp</strong> flaxseeds ·
+        <strong>handful</strong> blueberries · <strong>1 tbsp</strong> almond butter · <strong>30g</strong> walnuts
+      </div>
+      <div class="meal-tags">
+        <span class="tag tag-cycle">🌙 Luteal: magnesium</span>
+        <span class="tag tag-muscle">💪 Muscle support</span>
+      </div>
+      <div class="meal-actions">
+        <button class="btn-swap">Swap meal</button>
+        <span class="action-hint">or tap to edit ingredients</span>
+      </div>
+    </div>
+
+    <!-- Lunch -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-icon mi-teal">☀️</div>
+        <div class="meal-header-body">
+          <div class="meal-time">Lunch · 12–2pm</div>
+          <div class="meal-name">Salmon &amp; sweet potato bowl</div>
+        </div>
+        <div class="meal-stats">
+          <div class="meal-protein">42g protein</div>
+          <div class="meal-kcal">520 kcal</div>
+        </div>
+      </div>
+      <div class="meal-ingredients">
+        <strong>180g</strong> baked salmon · <strong>1 medium</strong> sweet potato ·
+        <strong>big handful</strong> spinach · <strong>½ cup</strong> chickpeas · olive oil &amp; lemon
+      </div>
+      <div class="meal-tags">
+        <span class="tag tag-cycle">🌙 Luteal: complex carbs</span>
+        <span class="tag tag-fat">🔥 Reduces visceral fat</span>
+      </div>
+      <div class="meal-actions">
+        <button class="btn-swap">Swap meal</button>
+        <span class="action-hint">or tap to edit ingredients</span>
+      </div>
+    </div>
+
+    <!-- Snack -->
+    <div class="snack-card">
+      <div class="snack-icon">🥚</div>
+      <div class="snack-body">
+        <div class="snack-label">Afternoon snack · Optional</div>
+        <div class="snack-name">2 boiled eggs + cucumber slices</div>
+      </div>
+      <div class="snack-protein">+13g protein</div>
+    </div>
+
+    <!-- Dinner -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-icon mi-purple">🌙</div>
+        <div class="meal-header-body">
+          <div class="meal-time">Dinner · 6–8pm</div>
+          <div class="meal-name">Turkey mince with lentils &amp; broccoli</div>
+        </div>
+        <div class="meal-stats">
+          <div class="meal-protein">44g protein</div>
+          <div class="meal-kcal">480 kcal</div>
+        </div>
+      </div>
+      <div class="meal-ingredients">
+        <strong>200g</strong> turkey mince · <strong>½ cup</strong> green lentils ·
+        <strong>large portion</strong> broccoli · <strong>1 tbsp</strong> olive oil · garlic &amp; herbs
+      </div>
+      <div class="meal-tags">
+        <span class="tag tag-cycle">🌙 Luteal: serotonin support</span>
+        <span class="tag tag-muscle">💪 Builds muscle</span>
+      </div>
+      <div class="meal-actions">
+        <button class="btn-swap">Swap meal</button>
+        <span class="action-hint">or tap to edit ingredients</span>
+      </div>
+    </div>
+
+    <!-- Daily totals -->
+    <div class="totals-card">
+      <div class="totals-title">Today's totals</div>
+      <div class="totals-row">
+        <span class="totals-label">Protein</span>
+        <span class="totals-val good" id="total-protein">134g / <span id="protein-goal">120g</span> target ✓</span>
+      </div>
+      <div class="totals-row">
+        <span class="totals-label">Calories</span>
+        <span class="totals-val" id="total-kcal">1,393 kcal</span>
+      </div>
+      <div class="totals-row">
+        <span class="totals-label">Carbs</span>
+        <span class="totals-val">~98g</span>
+      </div>
+      <div class="totals-row">
+        <span class="totals-label">Fat</span>
+        <span class="totals-val">~62g</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="protein-bar" style="width:100%"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-wrap">
+    <button class="cta-main" onclick="window.location.href='screen0_log.html'">Log what I actually ate</button>
+    <button class="cta-ghost">Save this plan</button>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  const store = JSON.parse(localStorage.getItem('flo_log') || '{}');
+  const days  = store.days || {};
+  const TODAY_KEY = new Date().toISOString().slice(0, 10);
+  const today = days[TODAY_KEY] || {};
+
+  // Adjust protein target based on body params if logged
+  const body = Object.values(days).reverse().map(d => d.body).find(b => b);
+  const muscle = body?.muscle ?? 29;
+  const proteinTarget = muscle < 36 ? 120 : 100; // higher target when muscle is low
+
+  document.getElementById('protein-target').textContent = proteinTarget + 'g protein';
+  document.getElementById('protein-goal').textContent  = proteinTarget + 'g';
+
+  // Protein bar progress: plan provides 134g
+  const planProtein = 134;
+  const barPct = Math.min(100, Math.round(planProtein / proteinTarget * 100));
+  document.getElementById('protein-bar').style.width = barPct + '%';
+
+  // Dynamic day heading
+  const now = new Date();
+  const days_names = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('day-heading').textContent =
+    "Today's meals · " + days_names[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()];
+})();
+</script>
+</body>
+</html>
